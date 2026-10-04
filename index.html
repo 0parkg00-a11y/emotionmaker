@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>표정 메이커</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>표정 메이커 <a href="https://x.com/bb_uu_t" target="_blank" style="color:inherit;text-decoration:underline;font-size:small;">@bb_uu_t</a></h1>
+  <span class="hint" id="countHint"></span>
+  <span class="spacer"></span>
+  <button id="btnPreset" class="ghost">🎨 감정 프리셋 20종</button>
+  <button id="btnExport" class="ghost">JSON 내보내기</button>
+  <button id="btnImport" class="ghost">JSON 불러오기</button>
+  <button id="btnGrid" class="primary">🖼️ 합본 이미지 생성</button>
+  <input type="file" id="fileImport" accept="application/json" hidden>
+  <input type="file" id="filePart" accept="image/*" multiple hidden>
+</header>
+
+<div class="main">
+  <div class="col" id="paletteCol">
+    <h2>파츠 선택</h2>
+    <div id="palette"></div>
+  </div>
+
+  <div class="col">
+    <h2>미리보기 · 편집</h2>
+    <div class="stage">
+      <div class="preview-wrap" id="preview"></div>
+      <div class="editor">
+        <div>
+          <div class="hint" style="margin-bottom:4px">꾸밈 레이어 (위 = 앞)</div>
+          <div class="deco-stack" id="decoStack"></div>
+        </div>
+        <div class="field">
+          <div class="hint" style="margin-bottom:4px">태그 / 하단 문구</div>
+          <textarea id="tagInput" rows="2" placeholder="예: 기쁨 / 활짝 웃는 얼굴"></textarea>
+        </div>
+        <div class="row wrap">
+          <label class="inline"><input type="checkbox" id="showText" checked> 하단 텍스트 표시</label>
+        </div>
+        <div class="row">
+          <button class="primary" id="btnSave" style="flex:1">＋ 표정 저장</button>
+          <button id="btnRandom" class="ghost">🎲 랜덤</button>
+          <button id="btnClear" class="ghost">초기화</button>
+          <button id="btnCancelEdit" class="ghost" hidden>편집 취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="coll-head">
+      <h2 style="margin:0">저장된 표정 <span id="collCount" class="hint"></span></h2>
+      <div class="row">
+        <button id="btnAll" class="ghost" style="padding:4px 8px;font-size:12px">전체선택</button>
+        <button id="btnNone" class="ghost" style="padding:4px 8px;font-size:12px">선택해제</button>
+      </div>
+    </div>
+    <div class="hint" style="margin-bottom:8px">체크한 표정이 이미지에 포함됩니다.</div>
+    <div class="coll-tools">
+      <button id="btnDelSel" class="danger">🗑 선택 삭제</button>
+      <button id="btnClearAll" class="danger">전체 초기화</button>
+    </div>
+    <div id="collection"></div>
+  </div>
+</div>
+
+<div class="modal" id="gridModal">
+  <div class="box">
+    <header>
+      <h1 style="font-size:15px">🖼️ 표정 모음 이미지</h1>
+      <span class="spacer"></span>
+      <button id="btnDownload" class="primary">PNG 다운로드</button>
+      <button id="btnCloseModal" class="ghost">닫기</button>
+    </header>
+    <div class="body">
+      <div class="opt">
+        <div class="field"><label>열 개수 (0 = 자동 정사각)</label><input type="number" id="optCols" value="0" min="0" max="20"></div>
+        <div class="field"><label>칸 크기 (px)</label><input type="number" id="optCell" value="300" min="80" max="800" step="10"></div>
+        <div class="field"><label>간격 (px)</label><input type="number" id="optGap" value="14" min="0" max="120"></div>
+        <div class="field">
+          <label>배경</label>
+          <div class="seg" id="optBg">
+            <button data-bg="transparent" class="on">투명</button>
+            <button data-bg="white">흰색</button>
+            <button data-bg="custom">색상</button>
+          </div>
+          <input type="color" id="optBgColor" value="#ffffff" hidden>
+        </div>
+        <div class="field"><label>텍스트</label><label class="inline"><input type="checkbox" id="optText" checked> 하단 문구 표시</label></div>
+        <div class="field"><label>글자 크기 (px)</label><input type="number" id="optFont" value="26" min="8" max="120"></div>
+        <div class="field"><label>글자 색</label><input type="color" id="optTextColor" value="#222222"></div>
+        <div class="hint" id="gridInfo"></div>
+        <div class="warn" id="serverWarn" hidden>⚠️ PNG 저장이 막히면(canvas 보안 제한) 폴더를 로컬 서버로 실행하세요.<br>예: 폴더에서 <b>python -m http.server</b> 후 브라우저로 접속.</div>
+      </div>
+      <div class="grid-preview-wrap"><canvas id="gridCanvas"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
